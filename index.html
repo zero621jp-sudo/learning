@@ -86,6 +86,7 @@ h1,h2,h3{text-wrap:balance;margin:0}
 .seg.small button{min-height:42px;font-size:.95rem}
 .levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
 .lv{position:relative;text-align:left;display:grid;gap:3px;padding:12px 14px;border-radius:18px;border:2px solid var(--line);background:rgba(255,255,255,.03)}
+.lv.pr .lv-stars{color:var(--hit);font-weight:800;font-size:.78rem}
 .lv.on{border-color:var(--star);background:rgba(255,210,63,.12);box-shadow:0 0 0 2px var(--star) inset}
 .lv-stars{color:var(--star);letter-spacing:.08em;font-size:.85rem}
 .lv b{font-family:var(--f-display);font-weight:400;font-size:1.35rem}
@@ -198,7 +199,7 @@ h1,h2,h3{text-wrap:balance;margin:0}
   <section id="scrTitle" class="screen">
     <div class="panel title-panel">
       <header class="logo">
-        <p class="eyebrow">20 × 20 まで マスター！</p>
+        <p class="eyebrow">たしざん・ひきざん から 20 × 20 まで マスター！</p>
         <h1><span class="ind">インドしき</span><span class="star">スター</span><br>シューター</h1>
         <p class="lead">もんだいの こたえが かいてある いんせきを タッチして うちおとそう！ まちがえても、さいごに インドしき の とき方で ふくしゅう できるよ。</p>
       </header>
@@ -206,7 +207,7 @@ h1,h2,h3{text-wrap:balance;margin:0}
         <div class="group"><h2>あそびかた</h2>
           <div class="seg" id="segPlayers" data-key="players"><button data-v="1">ひとりで</button><button data-v="2">おやこ たいせん</button></div></div>
         <div class="group"><h2>もんだい</h2>
-          <div class="seg" id="segMode" data-key="mode"><button data-v="mul">かけざん ×</button><button data-v="div">わりざん ÷</button><button data-v="mix">まぜまぜ</button></div></div>
+          <div class="seg" id="segMode" data-key="mode"><button data-v="add">たしざん ＋</button><button data-v="sub">ひきざん −</button><button data-v="mul">かけざん ×</button><button data-v="div">わりざん ÷</button><button data-v="mix">まぜまぜ</button></div></div>
         <div class="group"><h2>レベル</h2>
           <div class="seg small" id="whoTabs" data-key="edit"><button data-v="0">1P の レベル</button><button data-v="1">2P の レベル</button></div>
           <div class="levels" id="levels"></div></div>
@@ -264,6 +265,12 @@ h1,h2,h3{text-wrap:balance;margin:0}
     <div class="panel guide">
       <div class="guide-head"><h2>インドしき の ひみつ</h2><button class="btn-sub" id="btnGuideBack">もどる</button></div>
       <div class="tricks">
+        <article class="trick"><span class="tag">たしざん</span><h3>10 の まとまり を つくる</h3>
+          <p>くりあがり は、たす かず を わけて まず 10 を つくる（さくらんぼ けいさん）。</p>
+          <p class="ex">8 + 5 → 8 は あと 2 で 10、5 を 2 と 3 → 10 + 3 = <b>13</b></p></article>
+        <article class="trick"><span class="tag">ひきざん</span><h3>10 から ひく</h3>
+          <p>1 の くらい から ひけない ときは、10 から ひいて のこり を たす。</p>
+          <p class="ex">13 − 8 → 10 − 8 = 2、2 + 3 = <b>5</b></p></article>
         <article class="trick"><span class="tag">×10・×20</span><h3>0 を つけるだけ</h3>
           <p>10 を かけたら うしろに 0。20 は「2ばい して 0」。</p>
           <p class="ex">7 × 20 → 7 × 2 = 14 → <b>140</b></p></article>
@@ -287,7 +294,8 @@ h1,h2,h3{text-wrap:balance;margin:0}
         <h3>おうちのかたへ</h3>
         <ul>
           <li>1回は 90秒 が目安です。低学年の集中が続きやすい長さで、1日 2〜3回 くらいがおすすめです。</li>
-          <li>レベルは ひよこ → うさぎ（九九）→ きつね → ライオン（インド式）→ ドラゴン の順で進めてください。</li>
+          <li>レベルは れんしゅう1 → れんしゅう2 → ひよこ → うさぎ → きつね → ライオン → ドラゴン の順で進めてください。れんしゅうは答えが3つで、いん石がゆっくり落ちます。</li>
+          <li>「たしざん」「ひきざん」では、同じレベルでも くり上がり・くり下がり や けた数に合わせた問題になります。「まぜまぜ」は ＋−×÷ の4つが混ざります。</li>
           <li>得点は「問題の難しさ × スピード × コンボ」で決まります。おやこ対戦では、おとなは ライオン か ドラゴン を選ぶと勝負になります。</li>
           <li>ヒントを使うと その問題の得点は半分、まちがえるたびに さらに半分になります。2回まちがえると ヒントが自動で出ます。</li>
           <li>記録（今日・今月・今までのいちばん）は「もんだい・レベル・じかん」の組み合わせごとに、この端末のブラウザに保存されます。別の端末やブラウザとは共有されません。</li>
@@ -311,20 +319,43 @@ const store={
   set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 };
 
-/* ================= LEVELS ================= */
+/* ================= LEVELS =================
+   gen  … かけざん・わりざん 用 の 2つ の かず
+   agen … たしざん・ひきざん 用 の 2つ の かず（ひきざん は「たした こたえ − ひとつ」で つくる）
+   choices … いんせき の かず（れんしゅう は 3つ） */
 const LEVELS=[
-  {id:1,name:'ひよこ',stars:1,desc:'1〜5 の だん',pts:'1もん 50〜100てん',fall:10,rank:1,
-   gen:()=>[ri(1,5),ri(1,9)]},
-  {id:2,name:'うさぎ',stars:2,desc:'1〜9 の だん（くく）',pts:'1もん 50〜250てん',fall:9,rank:.85,
-   gen:()=>[ri(2,9),ri(1,9)]},
-  {id:3,name:'きつね',stars:3,desc:'11〜19 × 1〜9',pts:'1もん 400てん',fall:11,rank:.55,
-   gen:()=>[ri(11,19),ri(2,9)]},
-  {id:4,name:'ライオン',stars:4,desc:'11〜19 × 11〜19',pts:'1もん 600てん',fall:13,rank:.4,
-   gen:()=>[ri(11,19),ri(11,19)]},
-  {id:5,name:'ドラゴン',stars:5,desc:'1〜20 × 1〜20 ぜんぶ',pts:'1もん 50〜600てん',fall:12,rank:.5,
-   gen:()=>{let a,b;do{a=ri(2,20);b=ri(2,20)}while(a<=9&&b<=9&&Math.random()<.65);return[a,b]}},
+  {id:101,name:'れんしゅう1',stars:0,practice:true,choices:3,fall:15,rank:1,
+   desc:'1・2 の だん',adesc:'こたえ 10 まで',sdesc:'10 まで の ひきざん',
+   gen:()=>[ri(1,2),ri(1,9)],agen:()=>{const x=ri(1,9);return[x,ri(1,10-x)]}},
+  {id:102,name:'れんしゅう2',stars:0,practice:true,choices:3,fall:13,rank:1,
+   desc:'3・4・5 の だん',adesc:'くりあがり（20 まで）',sdesc:'くりさがり（20 まで）',
+   gen:()=>[ri(3,5),ri(1,9)],agen:()=>{const x=ri(2,9);return[x,ri(11-x,9)]}},
+  {id:1,name:'ひよこ',stars:1,choices:5,fall:10,rank:1,
+   desc:'1〜5 の だん',adesc:'1けた + 1けた',sdesc:'18 まで − 1けた',
+   gen:()=>[ri(1,5),ri(1,9)],agen:()=>[ri(1,9),ri(1,9)]},
+  {id:2,name:'うさぎ',stars:2,choices:5,fall:9,rank:.85,
+   desc:'1〜9 の だん（くく）',adesc:'2けた + 1けた',sdesc:'2けた − 1けた',
+   gen:()=>[ri(2,9),ri(1,9)],agen:()=>[ri(10,19),ri(2,9)]},
+  {id:3,name:'きつね',stars:3,choices:5,fall:11,rank:.55,
+   desc:'11〜19 × 1〜9',adesc:'10〜20 どうし',sdesc:'40 まで − 10〜20',
+   gen:()=>[ri(11,19),ri(2,9)],agen:()=>[ri(10,20),ri(10,20)]},
+  {id:4,name:'ライオン',stars:4,choices:5,fall:13,rank:.4,
+   desc:'11〜19 × 11〜19',adesc:'2けた + 2けた',sdesc:'2けた − 2けた',
+   gen:()=>[ri(11,19),ri(11,19)],agen:()=>{const x=ri(11,69);return[x,ri(11,Math.min(59,99-x))]}},
+  {id:5,name:'ドラゴン',stars:5,choices:5,fall:12,rank:.5,
+   desc:'1〜20 × 1〜20 ぜんぶ',adesc:'100 まで ぜんぶ',sdesc:'100 まで ぜんぶ',
+   gen:()=>{let a,b;do{a=ri(2,20);b=ri(2,20)}while(a<=9&&b<=9&&Math.random()<.65);return[a,b]},
+   agen:()=>{const x=ri(5,95);return[x,ri(3,100-x)]}},
 ];
-const MODE_NAME={mul:'かけざん',div:'わりざん',mix:'まぜまぜ'};
+const LV=id=>LEVELS.find(l=>l.id===id)||LEVELS[2];
+const MODE_NAME={add:'たしざん',sub:'ひきざん',mul:'かけざん',div:'わりざん',mix:'まぜまぜ'};
+const isAddMode=m=>m==='add'||m==='sub';
+function levelDesc(L,mode){
+  if(mode==='add')return L.adesc;
+  if(mode==='sub')return L.sdesc;
+  if(mode==='mix')return `${L.adesc} ／ ${L.desc}`;
+  return L.desc;
+}
 
 /* ================= PLAYERS ================= */
 const PLAYERS=[
@@ -376,8 +407,22 @@ function diffOf(x,y){
   if(b<=9)return 40;
   return 60;
 }
+// たしざん の むずかしさ（くりあがり と けたすう で きまる）
+function diffAdd(x,y){
+  const s=x+y,carry=(x%10)+(y%10)>=10;
+  if(s<=10)return 5;
+  if(x<10&&y<10)return 10;
+  if(x<10||y<10)return carry?15:10;
+  return carry?30:20;
+}
 function makeProblem(level,mode){
-  const op=mode==='mix'?(Math.random()<.5?'mul':'div'):mode;
+  const op=mode==='mix'?['add','sub','mul','div'][ri(0,3)]:mode;
+  if(op==='add'||op==='sub'){
+    let [x,y]=level.agen();
+    if(Math.random()<.5)[x,y]=[y,x];
+    if(op==='add')return {op:'+',a:x,b:y,ans:x+y,diff:diffAdd(x,y),key:`a${x}_${y}`};
+    return {op:'−',a:x+y,b:x,ans:y,diff:diffAdd(x,y)+5,key:`s${x}_${y}`};
+  }
   let [x,y]=level.gen();
   if(Math.random()<.5)[x,y]=[y,x];
   if(op==='mul') return {op:'×',a:x,b:y,ans:x*y,f:[x,y],diff:diffOf(x,y),key:`m${x}_${y}`};
@@ -385,16 +430,25 @@ function makeProblem(level,mode){
   if(x===1&&y!==1)[x,y]=[y,x];
   return {op:'÷',a:x*y,b:x,ans:y,f:[x,y],diff:diffOf(x,y)+10,key:`d${x}_${y}`};
 }
+// 1もん の てんすう の はば を じっさい に つくって しらべる
+const ptsCache={};
+function ptsLabel(L,mode){
+  const k=L.id+mode;if(ptsCache[k])return ptsCache[k];
+  let lo=1e9,hi=0;
+  for(let i=0;i<400;i++){const d=makeProblem(L,mode).diff*10;lo=Math.min(lo,d);hi=Math.max(hi,d)}
+  return ptsCache[k]=lo===hi?`1もん ${lo}てん`:`1もん ${lo}〜${hi}てん`;
+}
 function swapDigits(n){if(n<10||n>99)return -1;const s=String(n);return +(s[1]+s[0])}
-function makeChoices(p){
+function makeChoices(p,n){
   const ans=p.ans,pool=[];
   if(p.op==='×'){const[a,b]=p.f;
     pool.push(ans+1,ans-1,ans+10,ans-10,(a+1)*b,(a-1)*b,a*(b+1),a*(b-1),ans+2,ans-2,swapDigits(ans),ans+a,ans-b);
-  }else{pool.push(ans+1,ans-1,ans+2,ans-2,ans+10,ans-10,swapDigits(ans),ans*2,ans+3);}
+  }else if(p.op==='−'){pool.push(ans+1,ans-1,ans+2,ans-2,ans+10,ans-10,swapDigits(ans),p.a+p.b);}
+  else{pool.push(ans+1,ans-1,ans+2,ans-2,ans+10,ans-10,swapDigits(ans),ans*2,ans+3);}
   shuffle(pool);
   const set=new Set([ans]),out=[ans];
-  for(const v of pool){if(out.length>=5)break;if(v>0&&!set.has(v)){set.add(v);out.push(v)}}
-  let k=3;while(out.length<5){const v=ans+(k%2?1:-1)*k;k++;if(v>0&&!set.has(v)){set.add(v);out.push(v)}}
+  for(const v of pool){if(out.length>=n)break;if(v>0&&!set.has(v)){set.add(v);out.push(v)}}
+  let k=3;while(out.length<n){const v=ans+(k%2?1:-1)*k;k++;if(v>0&&!set.has(v)){set.add(v);out.push(v)}}
   return shuffle(out);
 }
 // Indian-style explanation; the last line always ends with the answer
@@ -413,14 +467,47 @@ function explainMul(a,b){
   const xo=x-10,yo=y-10,s=(x+yo)*10;
   return['インドしき：たして、かけて、たす',`① ${x} + ${yo} = ${x+yo} → ${s}`,`② ${xo} × ${yo} = ${xo*yo}`,`③ ${s} + ${xo*yo} = ${c}`];
 }
+// たしざん：10 の まとまり（さくらんぼ）
+function explainAdd(a,b){
+  const x=Math.max(a,b),y=Math.min(a,b),s=a+b;
+  if(s<=10){
+    const seq=Array.from({length:y},(_,i)=>x+i+1).join('、');
+    return[`おおきい ${x} から ${y}つ かぞえよう`,`${x} → ${seq}`,`${a} + ${b} = ${s}`];
+  }
+  if(y<10){ // 2けた（または 1けた）+ 1けた
+    const T=x-x%10,o=x%10;
+    if(o+y<10){
+      return[`${x} を ${T} と ${o} に わける`,`${o} + ${y} = ${o+y}`,`${T} + ${o+y} = ${s}`];
+    }
+    const need=10-o,rest=y-need;
+    return['10 の まとまり を つくろう',`${x} は あと ${need} で ${T+10}`,`${y} を ${need} と ${rest} に わける`,`${T+10} + ${rest} = ${s}`];
+  }
+  const xt=x-x%10,yt=y-y%10,xo=x%10,yo=y%10;
+  return['10 の くらい と 1 の くらい に わける',`10 の くらい：${xt} + ${yt} = ${xt+yt}`,`1 の くらい：${xo} + ${yo} = ${xo+yo}`,`${xt+yt} + ${xo+yo} = ${s}`];
+}
+// ひきざん：10 から ひく ／ わけて ひく
+function explainSub(a,b){
+  const c=a-b;
+  if(a<=10)return['ひきざん は たしざん の ぎゃく',`${b} + □ = ${a}`,`${a} − ${b} = ${c}`];
+  if(b<10){
+    const T=a-a%10,o=a%10;
+    if(o>=b)return[`${a} を ${T} と ${o} に わける`,`${o} − ${b} = ${o-b}`,`${T} + ${o-b} = ${c}`];
+    return['1 の くらい から ひけない ときは 10 から ひく',`${a} を ${T} と ${o} に わける`,`${T} − ${b} = ${T-b}`,`${T-b} + ${o} = ${c}`];
+  }
+  const bt=b-b%10,bo=b%10;
+  if(bo===0)return[`10 の くらい だけ ひく`,`${a} − ${b} = ${c}`];
+  return[`${b} を ${bt} と ${bo} に わけて じゅんばんに ひく`,`${a} − ${bt} = ${a-bt}`,`${a-bt} − ${bo} = ${c}`];
+}
 function explain(p){
   if(p.op==='×')return explainMul(p.a,p.b);
+  if(p.op==='+')return explainAdd(p.a,p.b);
+  if(p.op==='−')return explainSub(p.a,p.b);
   const m=explainMul(p.b,p.ans);
   return[`わりざん は かけざん の ぎゃく`,`${p.b} × □ = ${p.a} の □ は？`,...m.slice(1),`こたえ ${p.ans}`];
 }
 function hintLines(p){
   if(p.op==='÷')return['わりざん は かけざん の ぎゃく',`${p.b} × □ = ${p.a}`,`${p.b} の だん で □ を さがそう！`];
-  const l=explainMul(p.a,p.b).slice();
+  const l=explain(p).slice();
   l[l.length-1]=l[l.length-1].replace(/=\s*\d+$/,'= ？');
   return l;
 }
@@ -458,7 +545,8 @@ function speak(text){
   try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='ja-JP';u.rate=1.05;speechSynthesis.speak(u)}catch(e){}
 }
 // よみあげ用：助詞の「は」は「わ」と書かないと「ハ」と発音されるため
-const sayQ=p=>speak(`${p.a} ${p.op==='×'?'かける':'わる'} ${p.b} わ？`);
+const OP_WORD={'+':'たす','−':'ひく','×':'かける','÷':'わる'};
+const sayQ=p=>speak(`${p.a} ${OP_WORD[p.op]} ${p.b} わ？`);
 
 /* ================= CANVAS ================= */
 const cv=$('#cv'),ctx=cv.getContext('2d');
@@ -477,7 +565,7 @@ document.addEventListener('gesturestart',e=>e.preventDefault());
 const G={state:'idle',prev:null,turn:0,results:[],meteors:[],parts:[],floats:[],beam:null,ship:{x:0,tx:0},shake:0,clock:0};
 let wakeLock=null;
 
-function lanes(){const m=16,w=(W-m*2)/5;return{w,xs:[0,1,2,3,4].map(i=>m+w*(i+.5)),r:Math.max(26,Math.min(w*.42,66,H*.085))}}
+function lanes(){const n=G.level?G.level.choices:5,m=16,w=(W-m*2)/n;return{w,xs:Array.from({length:n},(_,i)=>m+w*(i+.5)),r:Math.max(26,Math.min(w*.42,n<=3?82:66,H*(n<=3?.1:.085)))}}
 function layoutLanes(){const L=lanes();G.meteors.forEach(m=>{m.baseX=L.xs[m.lane];m.r=L.r})}
 function playTop(){return $('#hud').getBoundingClientRect().bottom-10}
 
@@ -488,16 +576,16 @@ function startMatch(){
 }
 // プレイ ちょくぜん に「だれが あそぶ？」を えらぶ
 function showWho(){
-  const lv=LEVELS[opts.lv[G.turn]-1],two=opts.players===2;
+  const lv=LV(opts.lv[G.turn]),two=opts.players===2;
   $('#whoEyebrow').textContent=two?(G.turn===0?'おやこ たいせん ・ 1P':'おやこ たいせん ・ 2P'):`${lv.name} ・ ${MODE_NAME[opts.mode]} ・ ${opts.time}びょう`;
   $('#whoTitle').textContent=two?(G.turn===0?'さいしょ（1P）は だれ？':'つぎ（2P）は だれ？'):'だれが あそぶ？';
-  $('#whoSub').textContent=two?(G.turn===0?`1P の レベル：${lv.name}（${lv.desc}）`:`1P ${G.results[0].player.name} は ${fmt(G.results[0].score)} てん！ ／ 2P の レベル：${lv.name}（${lv.desc}）`):'なまえ を タッチすると スタート！';
+  $('#whoSub').textContent=two?(G.turn===0?`1P の レベル：${lv.name}（${levelDesc(lv,opts.mode)}）`:`1P ${G.results[0].player.name} は ${fmt(G.results[0].score)} てん！ ／ 2P の レベル：${lv.name}（${levelDesc(lv,opts.mode)}）`):'なまえ を タッチすると スタート！';
   $('#whoGrid').innerHTML=PLAYERS.map(p=>`<button class="who${p.special?' sp':''}${opts.who[G.turn]===p.id?' last':''}" data-id="${p.id}" style="--pc:${p.color}">
     <span class="av">${p.mark}</span><span class="who-name">${p.name}${p.special?'<i class="sp-tag">とくべつ きたい</i>':''}</span></button>`).join('');
   show('scrWho');
 }
 function startGame(){
-  const lv=LEVELS[opts.lv[G.turn]-1],pl=PL(opts.who[G.turn]);
+  const lv=LV(opts.lv[G.turn]),pl=PL(opts.who[G.turn]);
   Object.assign(G,{level:lv,player:pl,mode:opts.mode,dur:opts.time,t:opts.time,score:0,correct:0,wrong:0,miss:0,combo:0,maxCombo:0,
     mistakes:[],recent:[],meteors:[],parts:[],floats:[],missiles:[],locked:false,beam:null,problem:null,cd:3.999,lastCd:4,lastTick:-1,nextIn:0,hintOpen:false});
   G.ship.x=G.ship.tx=W/2;
@@ -517,10 +605,10 @@ function nextQuestion(){
   G.problem=p;G.tries=0;G.hintUsed=false;G.hintOpen=false;G.qClock=0;G.recorded=false;G.locked=false;G.missiles=[];
   $('#qText').innerHTML=qHTML(p);
   $('#hintBox').hidden=true;$('#hintBox').classList.remove('answer');$('#btnHint').disabled=false;
-  const L=lanes(),top=playTop(),order=shuffle([0,1,2,3,4]);
+  const L=lanes(),top=playTop(),order=shuffle(L.xs.map((_,i)=>i));
   G.fall=G.level.fall/(1+Math.min(G.combo,10)*.03);
   G.speed=Math.max(60,(dangerY-top))/G.fall;
-  G.meteors=makeChoices(p).map((v,i)=>({val:v,lane:order[i],baseX:L.xs[order[i]],x:L.xs[order[i]],
+  G.meteors=makeChoices(p,L.xs.length).map((v,i)=>({val:v,lane:order[i],baseX:L.xs[order[i]],x:L.xs[order[i]],
     y:top-L.r-Math.random()*90,r:L.r,hue:[200,280,330,20,160][order[i]],phase:Math.random()*6.28,state:'fall',a:1,spin:Math.random()*6.28}));
   G.state='play';
   sayQ(p);
@@ -863,13 +951,13 @@ function renderSetup(){
   $('#whoTabs').hidden=opts.players!==2;segSet('#whoTabs',opts.edit);
   $('#levels').innerHTML=LEVELS.map(L=>{
     const badges=opts.players===2?`<span class="badges">${opts.lv[0]===L.id?'<i class="badge p1">1P</i>':''}${opts.lv[1]===L.id?'<i class="badge p2">2P</i>':''}</span>`:'';
-    return `<button class="lv${opts.lv[opts.edit]===L.id?' on':''}" data-lv="${L.id}">${badges}
-      <span class="lv-stars">${'★'.repeat(L.stars)}${'☆'.repeat(5-L.stars)}</span><b>${L.name}</b>
-      <span class="lv-desc">${L.desc}</span><span class="lv-pt">${L.pts}</span></button>`}).join('');
+    return `<button class="lv${opts.lv[opts.edit]===L.id?' on':''}${L.practice?' pr':''}" data-lv="${L.id}">${badges}
+      <span class="lv-stars">${L.practice?'こたえ 3つ ・ ゆっくり':'★'.repeat(L.stars)+'☆'.repeat(5-L.stars)}</span><b>${L.name}</b>
+      <span class="lv-desc">${levelDesc(L,opts.mode)}</span><span class="lv-pt">${ptsLabel(L,opts.mode)}</span></button>`}).join('');
   const tS=$('#tgSound'),tV=$('#tgVoice');
   tS.textContent=`おと：${opts.sound?'オン':'オフ'}`;tS.classList.toggle('on',opts.sound);
   tV.textContent=`よみあげ：${opts.voice?'オン':'オフ'}`;tV.classList.toggle('on',opts.voice);
-  const lv=LEVELS[opts.lv[opts.edit]-1];
+  const lv=LV(opts.lv[opts.edit]);
   $('#bestCap').textContent=`${lv.name} ・ ${MODE_NAME[opts.mode]} ・ ${opts.time}びょう の きろく`;
   $('#board').innerHTML=boardHTML(boardOf(opts.mode,lv.id,opts.time),null);
   store.set('iss_opts',opts);
