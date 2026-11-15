@@ -1,1 +1,191 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="支援士 科目A">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14171c" media="(prefers-color-scheme: dark)">
+<title>支援士 科目A ドリル</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+<!-- ===== ホーム ===== -->
+<main id="home" class="screen">
+  <header class="home-head">
+    <h1>情報処理安全確保支援士<br><span>科目A（旧 午前Ⅰ・午前Ⅱ）ドリル</span></h1>
+    <p class="sub">IPA 公開過去問題 令和5〜7年度（春期・秋期）330問</p>
+  </header>
+
+  <div id="resume" class="card resume" hidden>
+    <div><strong>中断中のテストがあります</strong><div class="muted" id="resumeInfo"></div></div>
+    <div class="row-btns">
+      <button class="btn primary" id="resumeBtn">再開する</button>
+      <button class="btn ghost" id="discardBtn">破棄</button>
+    </div>
+  </div>
+
+  <section class="card">
+    <h2><span class="num">1</span>科目</h2>
+    <div class="seg" id="subjectSeg">
+      <button data-v="A1" class="on">A-1<small>旧午前Ⅰ</small></button>
+      <button data-v="A2">A-2<small>旧午前Ⅱ</small></button>
+      <button data-v="AB">両方<small>A-1＋A-2</small></button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="num">2</span>出題範囲</h2>
+    <div class="seg" id="rangeSeg">
+      <button data-v="single" class="on">年度・回を選ぶ</button>
+      <button data-v="mix">ミックス</button>
+    </div>
+    <div class="chips" id="sessionChips"></div>
+    <p class="hint" id="rangeHint"></p>
+  </section>
+
+  <section class="card">
+    <h2><span class="num">3</span>モード</h2>
+    <div class="modes" id="modeList"></div>
+    <div id="customBox" class="custom" hidden>
+      <label for="customMin">制限時間 <output id="customMinOut">20</output> 分</label>
+      <input type="range" id="customMin" min="5" max="90" step="5" value="20">
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="num">4</span>オプション</h2>
+    <label class="toggle"><input type="checkbox" id="optInstant"><span>1問ごとに答え合わせする</span></label>
+    <label class="toggle"><input type="checkbox" id="optShuffle"><span>出題順をシャッフル</span></label>
+    <label class="toggle"><input type="checkbox" id="optWeak"><span>苦手・未出題の問題を優先（ランダム出題時）</span></label>
+  </section>
+
+  <div class="start-wrap">
+    <div class="summary" id="startSummary"></div>
+    <button class="btn primary big" id="startBtn">スタート</button>
+  </div>
+
+  <section class="card" id="homeWeakCard" hidden>
+    <h2>弱点分析（累計）</h2>
+    <div id="homeWeak"></div>
+  </section>
+
+  <section class="card" id="historyCard">
+    <h2>これまでの成績</h2>
+    <div id="historyBody"></div>
+  </section>
+
+  <footer class="foot">
+    <p>出典：独立行政法人情報処理推進機構（IPA）情報処理安全確保支援士試験・高度試験 公開問題（令和5〜7年度 午前Ⅰ・午前Ⅱ）。問題は IPA 公開 PDF の画像、正解は IPA 公開の解答例によります。本アプリは IPA とは無関係の非公式学習ツールです。</p>
+  </footer>
+</main>
+
+<!-- ===== 受験中 ===== -->
+<div id="quiz" class="screen" hidden>
+  <div class="topbar">
+    <div class="tb-row">
+      <button class="icon-btn" id="quitBtn" aria-label="中断してホームへ">✕</button>
+      <div class="timer" id="timer" aria-live="off">--:--</div>
+      <div class="qpos" id="qpos">1 / 1</div>
+      <button class="btn small" id="finishBtn">採点</button>
+    </div>
+    <div class="tbar"><div id="tbarFill"></div></div>
+  </div>
+
+  <div class="qwrap">
+    <div class="qmeta"><span id="qsrc"></span><button class="flag" id="flagBtn" aria-pressed="false">☆ 見直し</button></div>
+    <figure class="qimg" id="qfig">
+      <img id="qimg" alt="">
+      <figcaption>タップで拡大</figcaption>
+    </figure>
+    <div class="feedback" id="feedback" hidden></div>
+  </div>
+
+  <div class="answerbar">
+    <div class="choices" id="choices">
+      <button data-c="ア">ア</button><button data-c="イ">イ</button><button data-c="ウ">ウ</button><button data-c="エ">エ</button>
+    </div>
+    <div class="navrow">
+      <button class="btn ghost" id="prevBtn">‹ 前へ</button>
+      <button class="btn ghost" id="paletteBtn">一覧</button>
+      <button class="btn ghost" id="nextBtn">次へ ›</button>
+    </div>
+  </div>
+</div>
+
+<!-- 問題一覧 -->
+<div class="sheet" id="palette" hidden>
+  <div class="sheet-body">
+    <div class="sheet-head"><strong>問題一覧</strong><button class="icon-btn" data-close>✕</button></div>
+    <div class="legend"><span class="lg ans"></span>解答済 <span class="lg flag"></span>見直し <span class="lg"></span>未解答</div>
+    <div class="grid" id="paletteGrid"></div>
+    <button class="btn primary" id="paletteFinish">採点する</button>
+  </div>
+</div>
+
+<!-- 拡大表示 -->
+<div class="zoom" id="zoom" hidden>
+  <div class="zoom-bar">
+    <button class="icon-btn" id="zoomOut" aria-label="縮小">−</button>
+    <button class="icon-btn" id="zoomIn" aria-label="拡大">＋</button>
+    <button class="icon-btn" data-close aria-label="閉じる">✕</button>
+  </div>
+  <div class="zoom-scroll"><img id="zoomImg" alt=""></div>
+</div>
+
+<!-- ===== 結果 ===== -->
+<main id="result" class="screen" hidden>
+  <section class="card result-hero">
+    <div class="verdict" id="verdict"></div>
+    <div class="score"><span id="scoreNum">0</span><small>点</small></div>
+    <div class="muted" id="scoreDetail"></div>
+    <div class="gauge"><div class="gauge-fill" id="gaugeFill"></div><div class="gauge-line"><span>合格ライン 60点</span></div></div>
+  </section>
+
+  <section class="card">
+    <h2>合格予想</h2>
+    <div class="stats" id="predict"></div>
+    <p class="hint" id="predictNote"></p>
+  </section>
+
+  <section class="card" id="weakCard">
+    <div class="review-head">
+      <h2>弱点分析</h2>
+      <div class="seg small" id="weakSeg"><button data-v="now" class="on">今回</button><button data-v="all">累計</button></div>
+    </div>
+    <div id="weakBody"></div>
+  </section>
+
+  <section class="card" id="breakdownCard">
+    <h2>内訳</h2>
+    <div id="breakdown"></div>
+  </section>
+
+  <section class="card">
+    <div class="review-head">
+      <h2>答え合わせ</h2>
+      <div class="seg small" id="reviewSeg"><button data-v="all" class="on">すべて</button><button data-v="wrong">不正解のみ</button></div>
+    </div>
+    <div id="reviewList"></div>
+  </section>
+
+  <div class="start-wrap">
+    <button class="btn primary big" id="retryWrongBtn">間違えた問題を解き直す</button>
+    <button class="btn ghost big" id="homeBtn">ホームに戻る</button>
+  </div>
+</main>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="data.js"></script>
+<script src="categories.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
